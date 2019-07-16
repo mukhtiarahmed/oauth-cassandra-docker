@@ -20,6 +20,7 @@ import org.springframework.data.cassandra.core.mapping.CassandraMappingContext;
 import javax.annotation.PostConstruct;
 import java.util.Collections;
 import java.util.List;
+import java.util.Set;
 
 
 /**
@@ -67,7 +68,7 @@ public class CassandraConfig  extends AbstractCassandraConfiguration  {
 
     }
 
-    @Bean
+    @Bean    
     public CassandraSessionFactoryBean session()  {
 
         CassandraSessionFactoryBean session = new CassandraSessionFactoryBean();
@@ -100,36 +101,23 @@ public class CassandraConfig  extends AbstractCassandraConfiguration  {
     public CassandraMappingContext mappingContext()  {
         CassandraMappingContext bean = new CassandraMappingContext();
         try {
-            bean.setInitialEntitySet(CassandraEntityClassScanner.scan(("com.tenhawks.auth.domain")));
+            bean.setInitialEntitySet(getInitialEntitySet());
         } catch (ClassNotFoundException e) {
             throw new SystemException(" error at mappingContext : ", e);
         }
         return bean;
     }
 
+    @Override
+    public String[] getEntityBasePackages() {
+        return new String[]{"com.tenhawks.auth.domain"};
+    }
+
+    @Override
+    protected Set<Class<?>> getInitialEntitySet() throws ClassNotFoundException {
+        return CassandraEntityClassScanner.scan(getEntityBasePackages());
+    }
+
 
 }
 
-@Configuration
-@SuppressWarnings("unused")
-class CassandraConfiguration extends AbstractSessionConfiguration {
-
-    @Autowired
-    Environment env;
-
-    @Override
-    protected String getContactPoints() {
-        return env.getProperty("cassandra.cluster.contact-points");
-    }
-
-    @Override
-    protected String getKeyspaceName() {
-        return env.getProperty("spring.data.cassandra.keyspace-name");
-    }
-
-    @Override
-    protected int getPort() {
-        return env.getProperty("cassandra.cluster.port", Integer.TYPE);
-    }
-
-}

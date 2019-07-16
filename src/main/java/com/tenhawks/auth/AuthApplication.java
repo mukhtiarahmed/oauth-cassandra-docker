@@ -82,13 +82,18 @@ public class AuthApplication {
 		client.getAuthorizedGrantTypes().add("refresh_token");
 
 		return () -> {
-			cassandraTemplate.truncate(Client.class);
-			cassandraTemplate.truncate(Role.class);
-			cassandraTemplate.truncate(User.class);
-			cassandraTemplate.truncate(AccessToken.class);
-			cassandraTemplate.truncate(Approval.class);
-			cassandraTemplate.truncate(ClientToken.class);
-			cassandraTemplate.truncate(RefreshToken.class);
+			try {
+				cassandraTemplate.truncate(Client.class);
+				cassandraTemplate.truncate(Role.class);
+				cassandraTemplate.truncate(User.class);
+				cassandraTemplate.truncate(AccessToken.class);
+				cassandraTemplate.truncate(Approval.class);
+				cassandraTemplate.truncate(ClientToken.class);
+				cassandraTemplate.truncate(RefreshToken.class);
+			} catch(Exception e) {
+				// igonre it
+			}
+			
 			clientRepository.save(client);
 			Client client1 = clientRepository.findByClientId(UUID.fromString("cffe3990-6f0e-11e8-b750-4d8614c940ff"));
 
