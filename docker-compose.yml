@@ -1,0 +1,40 @@
+version: '3'
+
+services:
+  oauth-cassandra:   
+    ports:
+     - "9292:9292"
+    environment:
+      CASSANDRA_HOST: cassandradb
+    image: oauth-cassandra:latest  
+    container_name: oauth-cassandra   
+    depends_on:
+      - cassandra   
+    networks:
+     oauthnetwork:
+       aliases:
+        - oauth-cassandra
+        
+  cassandra:   
+    ports:
+     - "9042:9042"
+    image: datastax/dse-server:latest   
+    container_name: cassandra
+    environment:         
+     DS_LICENSE: accept
+     HOST: cassandradb
+    volumes: 
+    - dbvolume:/var/lib/cassandra   
+    restart: always    
+    hostname: cassandradb
+    networks:
+     oauthnetwork:
+       aliases:
+        - cassandradb    
+
+volumes:
+  dbvolume: 
+
+networks:
+  oauthnetwork:
+    driver: bridge
