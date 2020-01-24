@@ -1,7 +1,7 @@
 #  Spring security oauth2 cassandra example
 
 ## Prerequisites:
-* Cassandra 3.9.0
+* Docker
 * JDK 1.8 
 * Maven 3.*
 
