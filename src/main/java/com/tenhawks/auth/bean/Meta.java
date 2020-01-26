@@ -1,11 +1,18 @@
 package com.tenhawks.auth.bean;
 
+import org.springframework.http.HttpStatus;
+
 public class Meta {
 	private int status;
 	private String message;
 
+    public Meta(HttpStatus status) {
+    		this.status = status.value();
+    		this.message = status.getReasonPhrase();
+    }
 
-	public int getStatus() {
+
+    public int getStatus() {
 		return status;
 	}
 

@@ -18,7 +18,7 @@ services:
   cassandra:   
     ports:
      - "9042:9042"
-    image: datastax/dse-server:latest   
+    image: cassandra:latest
     container_name: cassandra
     environment:         
      DS_LICENSE: accept
