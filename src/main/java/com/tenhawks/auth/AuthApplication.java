@@ -12,14 +12,19 @@ import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.boot.web.servlet.FilterRegistrationBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.core.Ordered;
 import org.springframework.data.cassandra.core.CassandraTemplate;
 import org.springframework.data.cassandra.repository.config.EnableCassandraRepositories;
 import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
 import org.springframework.security.oauth2.provider.token.AuthenticationKeyGenerator;
 import org.springframework.security.oauth2.provider.token.DefaultAuthenticationKeyGenerator;
 import org.springframework.util.StringUtils;
+import org.springframework.web.cors.CorsConfiguration;
+import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
+import org.springframework.web.filter.CorsFilter;
 
 import java.net.Inet4Address;
 import java.util.Arrays;
@@ -39,17 +44,7 @@ public class AuthApplication {
 
 	private static final Logger log = LoggerFactory.getLogger(AuthApplication.class);
 
-	public static void main(String[] args)  throws Exception {
-		String cassandraHost =  System.getProperty("CASSANDRA_HOST");
-		log.info("CASSANDRA_HOST :" + cassandraHost + ":");
-		if(StringUtils.isEmpty(cassandraHost)) {
-			System.setProperty("CASSANDRA_HOST", "0.0.0.0");
-		} else {
-			String ipAddress = Inet4Address.getByName(cassandraHost).getHostAddress();
-			//log.info("ipAddress :" + ipAddress + ":");
-			System.setProperty("CASSANDRA_HOST", ipAddress);
-		}
-
+	public static void main(String[] args) {
 		SpringApplication.run(AuthApplication.class, args);
 	}
 
@@ -67,6 +62,19 @@ public class AuthApplication {
 		return new DefaultAuthenticationKeyGenerator();
 	}
 
+	@Bean
+	public FilterRegistrationBean corsFilter() {
+		UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+		CorsConfiguration config = new CorsConfiguration();
+		config.setAllowCredentials(true);
+		config.addAllowedOrigin("*");
+		config.addAllowedHeader("*");
+		config.addAllowedMethod("*");
+		source.registerCorsConfiguration("/**", config);
+		FilterRegistrationBean bean = new FilterRegistrationBean(new CorsFilter(source));
+		bean.setOrder(Ordered.HIGHEST_PRECEDENCE);
+		return bean;
+	}
 
 	@Bean(name = "org.dozer.Mapper")
 	public DozerBeanMapper dozerBean() {

@@ -12,5 +12,7 @@ spring:
     cassandra:
       keyspace-name: th_auth
       schema-action: create_if_not_exists
+      contact-points: ${CASSANDRA_HOST:localhost}
+
 server:
   port: 9292
